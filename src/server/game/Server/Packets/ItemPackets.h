@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2019 TrinityCore <https://www.trinitycore.org/>
+ * This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -422,6 +422,21 @@ namespace WorldPackets
             ObjectGuid ItemGuid;
             uint32 SpellID = 0;
             uint32 Cooldown = 0;
+        };
+
+        class EnchantmentLog final : public ServerPacket
+        {
+        public:
+            EnchantmentLog() : ServerPacket(SMSG_ENCHANTMENT_LOG, 0) { }
+
+            WorldPacket const* Write() override;
+
+            ObjectGuid Owner;
+            ObjectGuid Caster;
+            ObjectGuid ItemGUID;
+            int32 ItemID = 0;
+            int32 Enchantment = 0;
+            int32 EnchantSlot = 0;
         };
 
         class ItemEnchantTimeUpdate final : public ServerPacket

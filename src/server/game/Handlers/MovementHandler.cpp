@@ -1,6 +1,5 @@
 /*
- * Copyright (C) 2008-2019 TrinityCore <https://www.trinitycore.org/>
- * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
+ * This file is part of the TrinityCore Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -31,6 +30,8 @@
 #include "Opcodes.h"
 #include "Player.h"
 #include "SpellInfo.h"
+#include "MotionMaster.h"
+#include "MovementGenerator.h"
 #include "Transport.h"
 #include "Vehicle.h"
 #include "WaypointMovementGenerator.h"
@@ -154,8 +155,8 @@ void WorldSession::HandleMoveWorldportAck()
             if (!seamlessTeleport)
             {
                 // short preparations to continue flight
-                FlightPathMovementGenerator* flight = (FlightPathMovementGenerator*)(GetPlayer()->GetMotionMaster()->top());
-                flight->Initialize(GetPlayer());
+                MovementGenerator* movementGenerator = GetPlayer()->GetMotionMaster()->top();
+                movementGenerator->Initialize(GetPlayer());
             }
             return;
         }
@@ -185,7 +186,7 @@ void WorldSession::HandleMoveWorldportAck()
             {
                 if (time_t timeReset = sInstanceSaveMgr->GetResetTimeFor(mEntry->ID, diff))
                 {
-                    uint32 timeleft = uint32(timeReset - time(NULL));
+                    uint32 timeleft = uint32(timeReset - time(nullptr));
                     GetPlayer()->SendInstanceResetWarning(mEntry->ID, diff, timeleft, true);
                 }
             }
@@ -430,7 +431,7 @@ void WorldSession::HandleMovementOpcode(OpcodeClient opcode, MovementInfo& movem
 
         plrMover->UpdateFallInformationIfNeed(movementInfo, opcode);
 
-        if (movementInfo.pos.GetPositionZ() < plrMover->GetMap()->GetMinHeight(movementInfo.pos.GetPositionX(), movementInfo.pos.GetPositionY()))
+        if (movementInfo.pos.GetPositionZ() < plrMover->GetMap()->GetMinHeight(plrMover->GetPhaseShift(), movementInfo.pos.GetPositionX(), movementInfo.pos.GetPositionY()))
         {
             if (!(plrMover->GetBattleground() && plrMover->GetBattleground()->HandlePlayerUnderMap(_player)))
             {
